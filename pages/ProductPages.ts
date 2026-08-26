@@ -22,8 +22,11 @@ export type ProductContentLink = {
 // elements (certifications, literature, case studies, related products)
 // that only some products declare.
 export class ProductPage extends BasePage {
+  readonly sourceLogo: Locator;
+
   constructor(page: Page) {
     super(page);
+    this.sourceLogo = page.locator("a.brand-primary.wrapper");
   }
 
   /** Navigate to a product page by its relative path. */
@@ -75,6 +78,16 @@ export class ProductPage extends BasePage {
     const link = this.linkByHref(websiteUrl);
     await expect(link).toBeVisible();
     await expect(link).toHaveText("Website");
+  }
+
+  /**
+   * The NBS Source logo is visible and links back to the homepage — same
+   * check as the manufacturer pages' equivalent test. Matched by suffix for
+   * the same reason as linkByHrefSuffix() above: this widget's locale
+   * prefix depends on the viewer's resolved locale ("/en/gb", "/en-us/gb", etc).
+   */
+  async assertSourceLogoLink(): Promise<void> {
+    await expect(this.sourceLogo).toHaveAttribute("href", /\/gb$/);
   }
 
   // VARIANT
