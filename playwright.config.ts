@@ -12,6 +12,10 @@ import 'dotenv/config';
 export default defineConfig({
   testDir: './tests',
   timeout: 60000,
+  /* Default expect() polling timeout is 5000ms — too tight given the site under
+     test can take ~4s just to reach the 'load' event, leaving CI runs almost no
+     margin. Raised so assertions have room to wait out real page-load latency. */
+  expect: { timeout: 15000 },
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
