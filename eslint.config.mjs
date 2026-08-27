@@ -46,6 +46,8 @@ export default tseslint.config(
             "assertSourceLogoLink",
             "contactManufacturerButtonBehavior",
             "assertBackToTopButtonBehavesAsExpected",
+            "assertSocialLink",
+            "assertCollectionButtonBehavesAsExpected",
           ],
         },
       ],

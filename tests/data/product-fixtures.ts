@@ -82,16 +82,34 @@ export const productFixtures: ProductFixture[] = [
     ],
   },
   {
-    // A different manufacturer with no certifications, literature, case
-    // studies, or related-product tiles declared — exercises the core tests
-    // in isolation and confirms no variant tests get generated for it.
-    label: "Abloy Door Loop 120° - Concealed Chrome (EA280)",
-    url: "product/door-loop-120-concealed-chrome-ea280/8ngGHJ9X6Hh12VSfvcBr2t/p6pFKMh72qKceCN9XphdwT",
-    heading: "Door Loop 120° - Concealed Chrome (EA280)",
-    manufacturerName: "abloy-uk",
-    manufacturerUrlSuffix: "/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/overview",
-    telephoneNumber: "+44 (0)1902 364500",
-    telephoneHref: "tel:+44 (0)1902 364500",
-    websiteUrl: "https://www.abloy.co.uk",
+    // A different manufacturer, declaring only literature documents (no
+    // certifications, case studies, or related-product tiles) — exercises
+    // the core tests against a second manufacturer and confirms no test is
+    // generated for a variant type this entry doesn't declare.
+    //
+    // Originally this fixture used an Abloy UK product (Door Loop 120°), but
+    // Abloy UK's entire product catalog was archived on the live site after
+    // that data was captured (their manufacturer page no longer even shows
+    // a Products tab) — a real example of why these tests run against live
+    // data rather than mocks. Replaced with a currently-active product from
+    // a different real manufacturer, verified live.
+    label: "ASSA ABLOY VL3116 Megadoor Vertical-lifting Fabric Door",
+    url: "product/vl3116-megadoor-vertical-lifting-fabric-door/fCMCWuoRfLVbHpWh8JRLJi/dNC2ESJADoJRDsbDKFXJAb",
+    heading: "VL3116 Megadoor Vertical-lifting Fabric Door - Industrial External Door",
+    manufacturerName: "assa-abloy-entrance-systems-ltd",
+    manufacturerUrlSuffix: "/gb/manufacturer/assa-abloy-entrance-systems-ltd/qWkC8i1YnLjGmKUFpVBPfa/overview",
+    telephoneNumber: "+44 (0)333 006 3443",
+    telephoneHref: "tel:+44 (0)333 006 3443",
+    websiteUrl: "https://www.assaabloy.com/uk/en",
+    literatureDocuments: [
+      {
+        name: "VL3116 Megadoor Product Data Sheet",
+        hrefSuffix: "/gb/literature/-/qxfzqFnB99bukeasBSmzRY/gCQpEYgXjijPd8e4sP5yEu",
+      },
+      {
+        name: "VL3116 Megadoor Vertical-lifting Fabric Door",
+        hrefSuffix: "/gb/literature/-/tWMrjE7PNrGuFE8BcZdsRP/tzRpTWyfo2LsSojgq78owv",
+      },
+    ],
   },
 ];
