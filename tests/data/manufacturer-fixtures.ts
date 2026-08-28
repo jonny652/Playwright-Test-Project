@@ -68,4 +68,29 @@ export const manufacturerFixtures: ManufacturerFixture[] = [
       { platform: "Twitter", url: "https://twitter.com/abloymedia" },
     ],
   },
+  {
+    // A third, genuinely different tab combination (CPD *and* Certifications,
+    // but no Products/Literature/Case studies) — further proof the tab bar is
+    // per-manufacturer data, not a fixed shape. Also declares four social
+    // links, three of them (Facebook, YouTube, Instagram) not covered by any
+    // other fixture entry.
+    label: "Axelent Ltd",
+    url: "/en/gb/manufacturer/axelent-ltd/pxK399TXRDLhE4hoS5Kwyy/overview",
+    heading: "Axelent Ltd",
+    telephoneNumber: "01793 523535",
+    telephoneHref: "tel:01793 523535",
+    websiteUrl: "https://www.axelent.co.uk",
+    tabs: [
+      { label: "Overview", hrefSuffix: "/en/gb/manufacturer/axelent-ltd/pxK399TXRDLhE4hoS5Kwyy/overview" },
+      { label: "CPD", hrefSuffix: "/en/gb/manufacturer/axelent-ltd/pxK399TXRDLhE4hoS5Kwyy/cpd" },
+      { label: "Certifications", hrefSuffix: "/en/gb/manufacturer/axelent-ltd/pxK399TXRDLhE4hoS5Kwyy/third-party-certifications" },
+      { label: "About us", hrefSuffix: "/en/gb/manufacturer/axelent-ltd/pxK399TXRDLhE4hoS5Kwyy/about" },
+    ],
+    socialLinks: [
+      { platform: "LinkedIn", url: "https://www.linkedin.com/company/axelent-ltd" },
+      { platform: "Facebook", url: "https://www.facebook.com/AxelentLtd" },
+      { platform: "YouTube", url: "https://www.youtube.com/c/AxelentGroup" },
+      { platform: "Instagram", url: "https://www.instagram.com/axelent_group" },
+    ],
+  },
 ];
