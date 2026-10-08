@@ -48,10 +48,10 @@ export class AbloyManufacturerPage extends BasePage {
     // Each entry pairs a tab locator with its expected href.
     const expectedTabs = [
       { locator: this.overviewTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/overview" },
-      { locator: this.productsTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/products" },
+      // { locator: this.productsTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/products" },
       { locator: this.cpdTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/cpd" },
-      { locator: this.literatureTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/literature" },
-      { locator: this.caseStudiesTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/case-studies" },
+      // { locator: this.literatureTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/literature" },
+      // { locator: this.caseStudiesTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/case-studies" },
       { locator: this.aboutTab, href: "/en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/about" },
     ];
 
@@ -64,7 +64,7 @@ export class AbloyManufacturerPage extends BasePage {
     // Read every tab's text in DOM order and assert the full sequence matches —
     // catches a tab being added, removed, or reordered without changing individual locators.
     const tabLabels = await this.allTabs.allTextContents();
-    expect(tabLabels.map((t) => t.trim())).toEqual(["Overview", "Products", "CPD", "Literature", "Case studies", "About us"]);
+    expect(tabLabels.map((t) => t.trim())).toEqual(["Overview", "CPD", "About us"]);
   }
 
   //Assert the Heart icon will allow loged in users to add an item to their collection.

@@ -154,33 +154,49 @@ function createCertificationsStub(transform: CertificationsTransform) {
 }
 
 /**
+ * True only for the Certifications tab's own list request: every operation
+ * in the (possibly batched) body is "certifications" and it's paginated
+ * (has a "take" variable).
+ *
+ * Response shape can't be used to pick this out for the error/abort stubs:
+ * the "brands" query fired when the Background opens the manufacturer page
+ * also returns certification-shaped items, and failing THAT request makes
+ * the site abandon the navigation (the Background then times out on the
+ * search-results URL). The overview page also sends unpaginated
+ * "certifications" ops (counts), but always batched alongside other ops —
+ * failing those batches would break the overview page too.
+ */
+function isCertificationsListRequest(route: Route): boolean {
+  let body: unknown;
+  try {
+    body = route.request().postDataJSON();
+  } catch {
+    return false;
+  }
+  const operations = ([] as unknown[]).concat(body) as { operationName?: string; variables?: Record<string, unknown> }[];
+  return (
+    operations.length > 0 &&
+    operations.every((op) => op?.operationName === "certifications") &&
+    operations.some((op) => op.variables?.take !== undefined)
+  );
+}
+
+/**
  * Like createCertificationsStub, but fails the request instead of
  * transforming it. Can't just fulfill every request to GRAPHQL_URL with an
  * error status — the Background steps (search, open the manufacturer page)
  * hit this same shared endpoint before the Certifications tab is ever
- * opened, and would break too. So this still fetches the real response and
- * shape-checks it first, only replacing the certifications request
- * specifically; everything else passes through untouched.
+ * opened, and would break too. So only the certifications list request is
+ * replaced (see isCertificationsListRequest); everything else continues
+ * untouched.
  */
 function createCertificationsErrorStub(status: number) {
   return async function setup(context: BrowserContext): Promise<void> {
     await context.route(
       GRAPHQL_URL,
       ignoringDisposedContext(async (route: Route) => {
-        const response = await route.fetch();
-        const json: unknown = await response.json();
-        // Only the shape-based match, not findCertificationsArray's key-name
-        // fallback: a general brand-overview request (fired during the
-        // Background's own navigation, before the Certifications tab is ever
-        // opened) happens to carry its own always-empty "certifications": []
-        // field, which the fallback matches by key name alone. Emptying/
-        // renaming that via the other stubs is a harmless no-op, but 500-ing
-        // that unrelated request here breaks the page's real navigation.
-        // Shape-checking is more precise and doesn't have this problem.
-        const match = findArrayByShape(json);
-
-        if (!match) {
-          await route.fulfill({ response });
+        if (!isCertificationsListRequest(route)) {
+          await route.continue();
           return;
         }
 
@@ -199,20 +215,16 @@ function createCertificationsErrorStub(status: number) {
  * fulfilling it with an error status — simulates a dropped connection where
  * no response arrives at all. Same reasoning as the error stub: can't abort
  * every request to GRAPHQL_URL, since the Background's own navigation hits
- * this shared endpoint too, so this still fetches the real response and
- * shape-checks it first, only aborting the certifications request itself.
+ * this shared endpoint too, so only the certifications list request is
+ * aborted.
  */
 function createCertificationsAbortStub() {
   return async function setup(context: BrowserContext): Promise<void> {
     await context.route(
       GRAPHQL_URL,
       ignoringDisposedContext(async (route: Route) => {
-        const response = await route.fetch();
-        const json: unknown = await response.json();
-        const match = findArrayByShape(json);
-
-        if (!match) {
-          await route.fulfill({ response });
+        if (!isCertificationsListRequest(route)) {
+          await route.continue();
           return;
         }
 
