@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import { type Page, type Locator, type TestInfo } from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import pixelmatch from "pixelmatch";
@@ -60,7 +60,7 @@ export async function applyVisualRegression(
   page: Page,
   projectName: string,
   snapshotName: string,
-  options: { mask?: Locator[] } = {},
+  options: { mask?: Locator[]; testInfo?: TestInfo } = {},
 ): Promise<void> {
   // Get the page fully loaded and settled before screenshotting.
   await triggerLazyLoad(page);
@@ -139,6 +139,14 @@ export async function applyVisualRegression(
   const diffRatio = diffPixels / (width * height);
   const diffThreshold = 0.01;
   if (diffRatio > diffThreshold) {
+    // Attach the images to the Playwright HTML report. The -expected/-actual/-diff
+    // naming makes the report show its built-in side-by-side / slider diff viewer,
+    // so failures in CI can be inspected from the uploaded report.
+    if (options.testInfo) {
+      await options.testInfo.attach(`${snapshotName}-expected.png`, { path: baselinePath, contentType: "image/png" });
+      await options.testInfo.attach(`${snapshotName}-actual.png`, { path: actualPath, contentType: "image/png" });
+      await options.testInfo.attach(`${snapshotName}-diff.png`, { path: diffPath, contentType: "image/png" });
+    }
     const error = new Error(
       `Visual regression detected: ${diffPixels} pixels differ ` +
       `(${(diffRatio * 100).toFixed(6)}%). Diff saved to ${diffPath}`,

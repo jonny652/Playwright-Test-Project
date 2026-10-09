@@ -47,3 +47,4 @@ Validates/edits the CI workflow at `.github/workflows/playwright.yml`.
 AI coding assistant integration.
 - Extension: `code --install-extension anthropic.claude-code`
 - npm: included in `npm install` (`@anthropic-ai/claude-code`), or install globally with `npm install -g @anthropic-ai/claude-code`
+//Changed repo name to Playwright 
