@@ -113,3 +113,16 @@ jobs:
         path: playwright-report/
         if-no-files-found: ignore
         retention-days: 7
+
+    # Raw visual-regression images (actual + diff) written by
+    # utils/visual-regression.ts — only produced when a comparison runs.
+    - name: Upload visual regression images
+      uses: actions/upload-artifact@v5
+      if: ${{ !cancelled() }}
+      with:
+        name: visual-regression-images
+        path: |
+          tests/snapshots/*-actual.png
+          tests/snapshots/*-diff.png
+        if-no-files-found: ignore
+        retention-days: 7

@@ -33,7 +33,7 @@ test.describe("Dyson manufacturer page", () => {
 
   // 4. Compare the page against a saved screenshot (visual regression).
   test("visual regression of the dyson manufacturer page", async ({ page }, testInfo) => {
-    await applyVisualRegression(page, testInfo.project.name, "dyson-manufacturer-page");
+    await applyVisualRegression(page, testInfo.project.name, "dyson-manufacturer-page", { testInfo });
   });
 
   // 5. Run an accessibility scan and save the results as an HTML report.
