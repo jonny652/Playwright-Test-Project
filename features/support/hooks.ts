@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Before, After, BeforeAll, AfterAll, setDefaultTimeout, type ITestCaseHookParameter } from "@cucumber/cucumber";
 import { chromium, type Browser } from "@playwright/test";
 import * as fs from "fs";
@@ -15,6 +16,12 @@ setDefaultTimeout(60 * 1000);
 // be slow. Playwright's own test runner does this for you; here we do it by hand.
 let browser: Browser;
 
+// playwright.config.ts's use.baseURL only applies to Playwright Test — contexts
+// created by hand here need it passed explicitly, or relative page.goto()
+// paths in the page objects (e.g. NbsHomePage.goto()'s "/en/gb") fail as
+// invalid URLs. Keep this fallback in sync with playwright.config.ts.
+const baseURL = process.env.BASE_URL ?? "https://source.thenbs.com";
+
 // Same file tests/auth.setup.ts writes to (see playwright.config.ts's
 // "setup" project) — sharing it means this suite and the Playwright-native
 // one reuse a single signed-in session instead of each signing in on their
@@ -23,7 +30,7 @@ const authFile = path.join(__dirname, "..", "..", "playwright", ".auth", "user.j
 
 /** True if authFile's saved session still gets us signed in. */
 async function isSavedSessionStillValid(): Promise<boolean> {
-  const context = await browser.newContext({ storageState: authFile });
+  const context = await browser.newContext({ baseURL, storageState: authFile });
   try {
     const page = await context.newPage();
     const nbsHomePage = new NbsHomePage(page);
@@ -40,7 +47,7 @@ async function isSavedSessionStillValid(): Promise<boolean> {
 
 /** Signs in fresh (mirrors tests/auth.setup.ts) and (re)writes authFile. */
 async function signInAndSaveAuthState(): Promise<void> {
-  const context = await browser.newContext();
+  const context = await browser.newContext({ baseURL });
   try {
     const page = await context.newPage();
     const basePage = new BasePage(page);
@@ -83,7 +90,7 @@ const screenshotDir = path.join(__dirname, "..", "..", "screenshots");
 // from each other (no shared cookies/storage), then wires up the page objects.
 Before(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
   this.browser = browser;
-  this.context = await browser.newContext({ storageState: authFile });
+  this.context = await browser.newContext({ baseURL, storageState: authFile });
   // Tag-driven network stubs (see utils/network-stubs.ts) — must be
   // registered before any navigation happens, so this runs before newPage().
   await applyNetworkStubs(this.context, scenario.pickle.tags.map((tag) => tag.name));

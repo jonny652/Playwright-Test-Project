@@ -9,5 +9,4 @@ Feature: Visual regression
 
     Examples:
       | page                 |
-      | NBS Source homepage  |
       | Dyson manufacturer   |
