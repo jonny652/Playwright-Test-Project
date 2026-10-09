@@ -57,16 +57,24 @@ jobs:
         if-no-files-found: ignore
         retention-days: 7
 
-    # Raw visual-regression images (actual + diff) written by
-    # utils/visual-regression.ts — only produced when a comparison runs.
+    # Collect only the snapshot files this run created or changed (new
+    # baselines, plus -actual/-diff images from comparisons) — anything already
+    # committed in tests/snapshots/ is left out so it can't be mistaken for
+    # output from this run. New baselines here are named *-linux-* and can be
+    # committed to tests/snapshots/ so later runs compare against them.
+    - name: Collect visual regression images from this run
+      if: ${{ !cancelled() }}
+      run: |
+        mkdir -p visual-regression-output
+        git ls-files --others --modified -z -- tests/snapshots \
+          | xargs -0 -r cp -t visual-regression-output
+
     - name: Upload visual regression images
       uses: actions/upload-artifact@v5
       if: ${{ !cancelled() }}
       with:
         name: visual-regression-images
-        path: |
-          tests/snapshots/*-actual.png
-          tests/snapshots/*-diff.png
+        path: visual-regression-output/
         if-no-files-found: ignore
         retention-days: 7
 
