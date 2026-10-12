@@ -32,7 +32,8 @@ test.describe("Dyson manufacturer page", () => {
   });
 
   // 4. Compare the page against a saved screenshot (visual regression).
-  test("visual regression of the dyson manufacturer page", async ({ page }, testInfo) => {
+  test("visual regression of the dyson manufacturer page", async ({ dysonManufacturerPage, page }, testInfo) => {
+    await expect(dysonManufacturerPage.heading).toBeVisible();
     await applyVisualRegression(page, testInfo.project.name, "dyson-manufacturer-page", { testInfo });
   });
 
