@@ -38,7 +38,20 @@ async function triggerLazyLoad(page: Page): Promise<void> {
     });
   });
 }
- 
+
+/**
+ * Waits until no loading spinner is showing. The site keeps its spinner in the DOM
+ * and toggles `display`, so "hidden" means it has no rendered boxes. Unlike the image
+ * wait this is allowed to throw — a screenshot of a spinner is useless as a baseline
+ * or a comparison.
+ */
+async function waitForSpinnersHidden(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () => Array.from(document.querySelectorAll('[role="progressbar"]')).every((el) => el.getClientRects().length === 0),
+    { timeout: 30000 },
+  );
+}
+
 /** Waits until every <img> on the page reports as fully loaded. */
 async function waitForImagesLoaded(page: Page): Promise<void> {
   await page.waitForFunction(
@@ -63,9 +76,14 @@ export async function applyVisualRegression(
   options: { mask?: Locator[]; testInfo?: TestInfo } = {},
 ): Promise<void> {
   // Get the page fully loaded and settled before screenshotting.
+  // The spinner is checked on both sides of the scroll: before, so we scroll real
+  // content rather than a placeholder; after, because networkidle can resolve while
+  // the page is still showing "Loading...".
+  await waitForSpinnersHidden(page);
   await triggerLazyLoad(page);
   await page.waitForLoadState("networkidle", { timeout: 30000 });
- 
+  await waitForSpinnersHidden(page);
+
   // Check every image loaded (carry on if not — a screenshot with a few
   // still-loading images is still useful for comparison).
   try {
